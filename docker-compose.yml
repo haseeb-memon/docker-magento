@@ -1,6 +1,21 @@
 version: "3"
 
 services:
+
+  #PHP FPM Container
+  php-fpm:
+    container_name: ${PROJECT_NAMESPACE}_php_fpm
+    build:
+      context: .
+      dockerfile: .docker/php-fpm/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./source_code:${PROJECT_ROOT}
+    environment:
+      - VERBOSE=false
+    networks:
+      - magento2_dev
+
   #NGINX Container
   nginx:
     container_name: ${PROJECT_NAMESPACE}_nginx
@@ -15,7 +30,7 @@ services:
       - 443:443
     networks:
       - magento2_dev
-    depends_on:
+    links:
       - php-fpm
 
   
