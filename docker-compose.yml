@@ -15,7 +15,8 @@ services:
       - VERBOSE=false
     networks:
       - magento2_dev
-
+    links:
+      - mysql
   #NGINX Container
   nginx:
     container_name: ${PROJECT_NAMESPACE}_nginx
@@ -33,9 +34,28 @@ services:
     links:
       - php-fpm
 
-  
+  #MySQL Container
+  mysql:
+    container_name: ${PROJECT_NAMESPACE}_mysql
+    build:
+      context: .
+      dockerfile: .docker/mysql/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - database:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER_NAME=${MYSQL_USER_NAME}
+      - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - magento2_dev
 
+#Volumes
+volumes:
+  database:
 
+#Networks
 networks:
   magento2_dev:
     driver: bridge
