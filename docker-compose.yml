@@ -17,6 +17,24 @@ services:
       - magento2_dev
     links:
       - mysql
+
+  #PHP FPM Container
+  php-cli:
+    container_name: ${PROJECT_NAMESPACE}_php_cli
+    build:
+      context: .
+      dockerfile: .docker/php-cli/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./source_code:${PROJECT_ROOT}
+    environment:
+      - VERBOSE=false
+    networks:
+      - magento2_dev
+    links:
+      - mysql
+    tty: true
+
   #NGINX Container
   nginx:
     container_name: ${PROJECT_NAMESPACE}_nginx
