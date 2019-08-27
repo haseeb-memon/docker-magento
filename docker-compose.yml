@@ -17,6 +17,7 @@ services:
       - magento2_dev
     links:
       - mysql
+      - redis
 
   #PHP FPM Container
   php-cli:
@@ -33,6 +34,7 @@ services:
       - magento2_dev
     links:
       - mysql
+      - redis
     tty: true
 
   #NGINX Container
@@ -69,9 +71,29 @@ services:
     networks:
       - magento2_dev
 
+  #Redis Container
+  redis:
+    container_name: ${PROJECT_NAMESPACE}_redis
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - redis-data:/var/lib/mysql
+    ports:
+      - "6379:6379"
+    environment:
+      - VERBOSE=true
+    networks:
+      - magento2_dev
+    tty: true
+
+ 
+
 #Volumes
 volumes:
   database:
+  redis-data:
 
 #Networks
 networks:
