@@ -47,8 +47,7 @@ services:
     volumes:
       - ./source_code:${PROJECT_ROOT}
     ports:
-      - 80:80
-      - 443:443
+      - "443:443"
     networks:
       - magento2_dev
     links:
@@ -88,6 +87,21 @@ services:
       - magento2_dev
     tty: true
 
+  #Varnish Container
+  varnish:
+    container_name: ${PROJECT_NAMESPACE}_varnish
+    build:
+      context: .
+      dockerfile: .docker/varnish/Dockerfile
+    restart: unless-stopped
+    environment:
+      - VERBOSE=false
+    networks:
+      - magento2_dev
+    links:
+      - nginx
+    ports:
+      - "80:80"
  
 
 #Volumes
