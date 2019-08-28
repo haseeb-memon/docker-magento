@@ -30,6 +30,18 @@ RUN docker-php-ext-install \
 	xsl \
 	zip
 ########################################################################################################################
+RUN docker-php-ext-configure opcache --enable-opcache \
+ && docker-php-ext-install opcache
+########################################################################################################################
+RUN { \
+		echo 'opcache.memory_consumption=256'; \
+		echo 'opcache.interned_strings_buffer=16'; \
+		echo 'opcache.max_accelerated_files=4000'; \
+		echo 'opcache.revalidate_freq=60'; \
+		echo 'opcache.fast_shutdown=1'; \
+		echo 'opcache.enable_cli=1'; \
+	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+########################################################################################################################
 RUN rm -rf /var/cache/apk/* \
     && rm -rf /tmp/pear \
     && rm -rf /var/lib/apt/lists/* && rm -rf && rm -rf /var/lib/cache/* && rm -rf /var/lib/log/* \
