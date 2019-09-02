@@ -37,13 +37,38 @@ services:
       - redis
     tty: true
 
+  #PHP Cron Job Container
+  php-cron:
+    container_name: ${PROJECT_NAMESPACE}_php_cron
+    build:
+      context: .
+      dockerfile: .docker/php-cron/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./source_code:${PROJECT_ROOT}
+    networks:
+      - magento2_dev
+    environment:
+      - VERBOSE=true
+    links:
+      - mysql
+      - redis
+
   #NGINX Container
   nginx:
     container_name: ${PROJECT_NAMESPACE}_nginx
     build:
       context: .
       dockerfile: .docker/nginx/Dockerfile
+      args:
+        - NGINX_PORT=${NGINX_PORT}
+        - NGINX_PROXY=${NGINX_PROXY}
+        - PROJECT_URL=${PROJECT_URL}
+        - PROJECT_DOMAIN=${PROJECT_DOMAIN}
+        - PROJECT_ROOT=${PROJECT_ROOT}
     restart: unless-stopped
+    environment:
+      - PHP_HOST="php-fpm"
     volumes:
       - ./source_code:${PROJECT_ROOT}
     ports:
@@ -102,7 +127,7 @@ services:
       - nginx
     ports:
       - "80:80"
- 
+
 
 #Volumes
 volumes:
