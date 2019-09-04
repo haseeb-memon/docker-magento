@@ -128,11 +128,27 @@ services:
     ports:
       - "80:80"
 
+  #RabbitMQ Queuing System
+  rabbitmq:
+    container_name: ${PROJECT_NAMESPACE}_rabbitmq
+    image: rabbitmq:3.7.8-management
+    volumes:
+      - 'rabbitmq_data:/data'
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    networks:
+      - magento2_dev
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
 
 #Volumes
 volumes:
   database:
   redis-data:
+  rabbitmq_data:
 
 #Networks
 networks:
