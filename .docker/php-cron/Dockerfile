@@ -10,12 +10,14 @@ RUN apk --update --no-cache add \
 	freetype-dev \
 	g++ \
 	icu \
-	icu-dev \
-	libjpeg-turbo-dev \
-	libpng-dev \
-	libxml2-dev \
-	libxslt-dev \
-	shadow
+    icu-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libxml2-dev \
+    libxslt-dev \
+    shadow \
+    zlib-dev \
+    libzip-dev
 ########################################################################################################################
 RUN docker-php-ext-configure \
 	gd --with-jpeg-dir=/usr/local/ --with-freetype-dir=/usr/include/
@@ -26,7 +28,8 @@ RUN docker-php-ext-install \
 	intl \
 	pdo_mysql \
 	soap \
-	xsl
+	xsl \
+	zip
 ########################################################################################################################
 RUN addgroup -g 1000 magento && \
 	adduser -D -S -H -G magento -u 1000 -s /bin/sh magento && \
