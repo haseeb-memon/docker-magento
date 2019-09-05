@@ -1,11 +1,11 @@
 ########################################################################################################################
-FROM    nginx:alpine
+FROM    nginx:latest
 ########################################################################################################################
 LABEL   Maintainer  =   "Haseeb Memon <memon.haseeb@hotmail.com>"
 LABEL   Description =   "nginx container for magento"
 ########################################################################################################################
 ARG NGINX_PORT=${NGINX_PORT:-80}
-ARG NGINX_PROXY=${NGINX_PROXY:-php-fpm}
+ARG NGINX_PROXY=${NGINX_PROXY:-default}
 ARG PROJECT_URL=${PROJECT_URL}
 ARG PROJECT_DOMAIN=${PROJECT_DOMAIN:-localhost}
 ARG PROJECT_ROOT=${PROJECT_ROOT:-/var/www/html}
@@ -17,9 +17,11 @@ ENV PROJECT_DOMAIN=${PROJECT_DOMAIN}
 ENV PROJECT_ROOT=${PROJECT_ROOT}
 ########################################################################################################################
 #Install System packages
-RUN apk --update --no-cache add \
-	shadow \
-	openssl
+RUN apt-get update && apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    openssl \
+    curl
 ########################################################################################################################
 #Create system user
 RUN usermod  -u 1000 nginx && \
@@ -48,6 +50,7 @@ RUN ["chmod", "+x", "/usr/local/bin/startup.sh"]
 # Expose Ports
 EXPOSE ${NGINX_PORT} 443
 ########################################################################################################################
+VOLUME  /var/www/html
 WORKDIR /var/www/html
 ########################################################################################################################
 # Run script on conatiner loading

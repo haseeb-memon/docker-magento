@@ -7,19 +7,20 @@ services:
     build:
       context: .
       dockerfile: .docker/nginx/Dockerfile
+      args:
+        - NGINX_PORT=${NGINX_PORT}
+        - NGINX_PROXY=${NGINX_PROXY}
+        - PROJECT_URL=${PROJECT_URL}
+        - PROJECT_DOMAIN=${PROJECT_DOMAIN}
+        - PROJECT_ROOT=${PROJECT_ROOT}
     restart: unless-stopped
     volumes:
       - ./source_code:${PROJECT_ROOT}
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
     networks:
       - magento2_dev
-    depends_on:
-      - php-fpm
-
-  
-
 
 networks:
   magento2_dev:
