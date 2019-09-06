@@ -15,6 +15,7 @@ ENV NGINX_PROXY=${NGINX_PROXY}
 ENV PROJECT_URL=${PROJECT_URL}
 ENV PROJECT_DOMAIN=${PROJECT_DOMAIN}
 ENV PROJECT_ROOT=${PROJECT_ROOT}
+ENV TZ=Asia/Dubai
 ########################################################################################################################
 #Install System packages
 RUN apt-get update && apt-get install -y \
@@ -38,6 +39,11 @@ RUN mkdir -p /etc/nginx/ssl/ && \
     -keyout /etc/nginx/ssl/nginx.key \
     -subj "/C=US/ST=New York/L=Queens/O=Docker Magento/OU=Org/CN=${PROJECT_DOMAIN}" \
  && openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
+########################################################################################################################
+# TimeZone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get install -y tzdata
+RUN dpkg-reconfigure --frontend noninteractive tzdata
 ########################################################################################################################
 #Copy custom configs to container
 COPY .docker/nginx/config/nginx.conf        /etc/nginx/nginx.conf
