@@ -8,6 +8,8 @@ services:
     build:
       context: .
       dockerfile: .docker/php-fpm/Dockerfile
+      args:
+        - PHP_VERSION=${PHP_VERSION}
     restart: unless-stopped
     volumes:
       - ./source_code:${PROJECT_ROOT}
