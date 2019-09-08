@@ -1,22 +1,19 @@
 ########################################################################################################################
 ARG     PHP_VERSION="${PHP_VERSION:-7.2}"
-FROM    php:${PHP_VERSION}-cli-alpine
+FROM    php:${PHP_VERSION}-cli
 ########################################################################################################################
 LABEL   Maintainer  =   "Haseeb Memon <memon.haseeb@hotmail.com>"
 LABEL   Description =   "php-cli container for magento"
 ########################################################################################################################
-RUN apk --update --no-cache add \
+RUN apt-get update && apt-get install -y \
 	curl \
 	g++ \
-	freetype-dev \
-	icu \
-	icu-dev \
-	libjpeg-turbo-dev \
+	libfreetype6-dev \
+	libicu-dev \
+	libjpeg62-turbo-dev \
 	libpng-dev \
 	libxml2-dev \
 	libxslt-dev \
-	shadow \
-	zlib-dev \
 	libzip-dev
 ########################################################################################################################
 RUN docker-php-ext-configure \
