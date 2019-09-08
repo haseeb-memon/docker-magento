@@ -17,6 +17,8 @@ services:
       - VERBOSE=false
     networks:
       - magento2_dev
+    links:
+      - mysql
 
   #PHP CLI Container
   php-cli:
@@ -34,6 +36,8 @@ services:
     networks:
       - magento2_dev
     tty: true
+    links:
+      - mysql
 
   #PHP Cron Job Container
   php-cron:
@@ -50,6 +54,8 @@ services:
       - magento2_dev
     environment:
       - VERBOSE=false
+    links:
+      - mysql
 
   #NGINX Container
   nginx:
@@ -75,6 +81,43 @@ services:
     links:
       - php-fpm
 
+  #MySQL Container
+  mysql:
+    container_name: ${PROJECT_NAMESPACE}_mysql
+    build:
+      context: .
+      dockerfile: .docker/mysql/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - database:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER_NAME=${MYSQL_USER_NAME}
+      - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - magento2_dev
+
+  phpmyadmin:
+    container_name: ${PROJECT_NAMESPACE}_phpmyadmin
+    hostname: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8888:80"
+    depends_on:
+      - mysql
+    networks:
+      - magento2_dev
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+#Volumes
+volumes:
+  database:
+
+#Network
 networks:
   magento2_dev:
     driver: bridge
