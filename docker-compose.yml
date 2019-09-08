@@ -65,8 +65,6 @@ services:
         - PROJECT_ROOT=${PROJECT_ROOT}
         - TIME_ZONE=${TIME_ZONE}
     restart: unless-stopped
-    environment:
-      - PHP_HOST="php-fpm"
     volumes:
       - ./source_code:${PROJECT_ROOT}
     ports:
