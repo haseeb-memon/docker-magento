@@ -41,13 +41,15 @@ services:
     build:
       context: .
       dockerfile: .docker/php-cron/Dockerfile
+      args:
+        - PHP_VERSION=${PHP_VERSION}
     restart: unless-stopped
     volumes:
       - ./source_code:${PROJECT_ROOT}
     networks:
       - magento2_dev
     environment:
-      - VERBOSE=true
+      - VERBOSE=false
 
   #NGINX Container
   nginx:
