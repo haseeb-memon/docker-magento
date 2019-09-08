@@ -19,6 +19,9 @@ services:
       - magento2_dev
     links:
       - mysql
+      - redis-cache
+      - redis-page-cache
+      - redis-session
 
   #PHP CLI Container
   php-cli:
@@ -38,6 +41,9 @@ services:
     tty: true
     links:
       - mysql
+      - redis-cache
+      - redis-page-cache
+      - redis-session
 
   #PHP Cron Job Container
   php-cron:
@@ -56,6 +62,9 @@ services:
       - VERBOSE=false
     links:
       - mysql
+      - redis-cache
+      - redis-page-cache
+      - redis-session
 
   #NGINX Container
   nginx:
@@ -113,9 +122,63 @@ services:
       - PMA_USER=root
       - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
 
+  #Redis Container for default cache
+  redis-cache:
+    container_name: ${PROJECT_NAMESPACE}_redis_cache
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+      args:
+        - ALPINE_VERSION=${ALPINE_VERSION}
+    restart: unless-stopped
+    volumes:
+      - redis-cache:/data
+    environment:
+      - VERBOSE=false
+    networks:
+      - magento2_dev
+    tty: true
+
+  #Redis Container for full page cache
+  redis-page-cache:
+    container_name: ${PROJECT_NAMESPACE}_redis_page_cache
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+      args:
+        - ALPINE_VERSION=${ALPINE_VERSION}
+    restart: unless-stopped
+    volumes:
+      - redis-page-cache:/data
+    environment:
+      - VERBOSE=false
+    networks:
+      - magento2_dev
+    tty: true
+
+  #Redis Container for session
+  redis-session:
+    container_name: ${PROJECT_NAMESPACE}_redis_session
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+      args:
+        - ALPINE_VERSION=${ALPINE_VERSION}
+    restart: unless-stopped
+    volumes:
+      - redis-session:/data
+    environment:
+      - VERBOSE=false
+    networks:
+      - magento2_dev
+    tty: true
+
 #Volumes
 volumes:
   database:
+  redis-cache:
+  redis-page-cache:
+  redis-session:
 
 #Network
 networks:
