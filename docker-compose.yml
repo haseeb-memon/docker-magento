@@ -13,6 +13,7 @@ services:
         - PROJECT_URL=${PROJECT_URL}
         - PROJECT_DOMAIN=${PROJECT_DOMAIN}
         - PROJECT_ROOT=${PROJECT_ROOT}
+        - TIME_ZONE=${TIME_ZONE}
     restart: unless-stopped
     volumes:
       - ./source_code:${PROJECT_ROOT}

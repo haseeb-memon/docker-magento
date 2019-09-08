@@ -9,13 +9,14 @@ ARG NGINX_PROXY=${NGINX_PROXY:-default}
 ARG PROJECT_URL=${PROJECT_URL}
 ARG PROJECT_DOMAIN=${PROJECT_DOMAIN:-localhost}
 ARG PROJECT_ROOT=${PROJECT_ROOT:-/var/www/html}
+ARG TIME_ZONE=${TIME_ZONE:-Asia/Dubai}
 ########################################################################################################################
 ENV NGINX_PORT=${NGINX_PORT}
 ENV NGINX_PROXY=${NGINX_PROXY}
 ENV PROJECT_URL=${PROJECT_URL}
 ENV PROJECT_DOMAIN=${PROJECT_DOMAIN}
 ENV PROJECT_ROOT=${PROJECT_ROOT}
-ENV TZ=Asia/Dubai
+ENV TIME_ZONE=${TIME_ZONE}
 ########################################################################################################################
 #Install System packages
 RUN apt-get update && apt-get install -y \
@@ -41,7 +42,7 @@ RUN mkdir -p /etc/nginx/ssl/ && \
  && openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
 ########################################################################################################################
 # TimeZone
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime && echo $TIME_ZONE > /etc/timezone
 RUN apt-get install -y tzdata
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 ########################################################################################################################
