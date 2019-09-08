@@ -15,10 +15,8 @@ services:
       - VERBOSE=false
     networks:
       - magento2_dev
-    links:
-      - mysql
 
-  #PHP FPM Container
+  #PHP CLI Container
   php-cli:
     container_name: ${PROJECT_NAMESPACE}_php_cli
     build:
@@ -31,8 +29,6 @@ services:
       - VERBOSE=false
     networks:
       - magento2_dev
-    links:
-      - mysql
     tty: true
 
   #NGINX Container
@@ -41,39 +37,24 @@ services:
     build:
       context: .
       dockerfile: .docker/nginx/Dockerfile
+      args:
+        - NGINX_PORT=${NGINX_PORT}
+        - NGINX_PROXY=${NGINX_PROXY}
+        - PROJECT_URL=${PROJECT_URL}
+        - PROJECT_DOMAIN=${PROJECT_DOMAIN}
+        - PROJECT_ROOT=${PROJECT_ROOT}
+        - TIME_ZONE=${TIME_ZONE}
     restart: unless-stopped
     volumes:
       - ./source_code:${PROJECT_ROOT}
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
     networks:
       - magento2_dev
     links:
       - php-fpm
 
-  #MySQL Container
-  mysql:
-    container_name: ${PROJECT_NAMESPACE}_mysql
-    build:
-      context: .
-      dockerfile: .docker/mysql/Dockerfile
-    restart: unless-stopped
-    volumes:
-      - database:/var/lib/mysql
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER_NAME=${MYSQL_USER_NAME}
-      - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    networks:
-      - magento2_dev
-
-#Volumes
-volumes:
-  database:
-
-#Networks
 networks:
   magento2_dev:
     driver: bridge
