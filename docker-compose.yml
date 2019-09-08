@@ -15,11 +15,8 @@ services:
       - VERBOSE=false
     networks:
       - magento2_dev
-    links:
-      - mysql
-      - redis
 
-  #PHP FPM Container
+  #PHP CLI Container
   php-cli:
     container_name: ${PROJECT_NAMESPACE}_php_cli
     build:
@@ -32,9 +29,6 @@ services:
       - VERBOSE=false
     networks:
       - magento2_dev
-    links:
-      - mysql
-      - redis
     tty: true
 
   #PHP Cron Job Container
@@ -50,9 +44,6 @@ services:
       - magento2_dev
     environment:
       - VERBOSE=true
-    links:
-      - mysql
-      - redis
 
   #NGINX Container
   nginx:
@@ -66,75 +57,20 @@ services:
         - PROJECT_URL=${PROJECT_URL}
         - PROJECT_DOMAIN=${PROJECT_DOMAIN}
         - PROJECT_ROOT=${PROJECT_ROOT}
+        - TIME_ZONE=${TIME_ZONE}
     restart: unless-stopped
     environment:
       - PHP_HOST="php-fpm"
     volumes:
       - ./source_code:${PROJECT_ROOT}
     ports:
+      - "80:80"
       - "443:443"
     networks:
       - magento2_dev
     links:
       - php-fpm
 
-  #MySQL Container
-  mysql:
-    container_name: ${PROJECT_NAMESPACE}_mysql
-    build:
-      context: .
-      dockerfile: .docker/mysql/Dockerfile
-    restart: unless-stopped
-    volumes:
-      - database:/var/lib/mysql
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER_NAME=${MYSQL_USER_NAME}
-      - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    networks:
-      - magento2_dev
-
-  #Redis Container
-  redis:
-    container_name: ${PROJECT_NAMESPACE}_redis
-    build:
-      context: .
-      dockerfile: .docker/redis/Dockerfile
-    restart: unless-stopped
-    volumes:
-      - redis-data:/var/lib/mysql
-    ports:
-      - "6379:6379"
-    environment:
-      - VERBOSE=true
-    networks:
-      - magento2_dev
-    tty: true
-
-  #Varnish Container
-  varnish:
-    container_name: ${PROJECT_NAMESPACE}_varnish
-    build:
-      context: .
-      dockerfile: .docker/varnish/Dockerfile
-    restart: unless-stopped
-    environment:
-      - VERBOSE=false
-    networks:
-      - magento2_dev
-    links:
-      - nginx
-    ports:
-      - "80:80"
-
-
-#Volumes
-volumes:
-  database:
-  redis-data:
-
-#Networks
 networks:
   magento2_dev:
     driver: bridge
