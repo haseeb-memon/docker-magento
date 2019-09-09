@@ -39,6 +39,8 @@ RUN rm -rf /var/cache/apk/* \
 COPY .docker/php-cli/bin/ /usr/local/bin/
 RUN ["chmod", "+x", "/usr/local/bin/"]
 ########################################################################################################################
+ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_HOME=${COMPOSER_HOME}
 ########################################################################################################################
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 ########################################################################################################################
