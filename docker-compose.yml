@@ -178,8 +178,8 @@ services:
       context: .
       dockerfile: .docker/varnish/Dockerfile
     restart: unless-stopped
-    environment:
-      - VERBOSE=false
+    env_file:
+      - .env
     networks:
       - magento2_dev
     links:
