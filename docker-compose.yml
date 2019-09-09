@@ -13,8 +13,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./source_code:${PROJECT_ROOT}
-    environment:
-      - VERBOSE=false
+    env_file:
+      - .env
     networks:
       - magento2_dev
     links:
@@ -34,8 +34,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./source_code:${PROJECT_ROOT}
-    environment:
-      - VERBOSE=false
+    env_file:
+      - .env
     networks:
       - magento2_dev
     tty: true
@@ -58,13 +58,13 @@ services:
       - ./source_code:${PROJECT_ROOT}
     networks:
       - magento2_dev
-    environment:
-      - VERBOSE=false
     links:
       - mysql
       - redis-cache
       - redis-page-cache
       - redis-session
+    env_file:
+      - .env
 
   #NGINX Container
   nginx:
@@ -84,6 +84,8 @@ services:
       - ./source_code:${PROJECT_ROOT}
     ports:
       - "443:443"
+    env_file:
+      - .env
     networks:
       - magento2_dev
     links:
@@ -98,11 +100,8 @@ services:
     restart: unless-stopped
     volumes:
       - database:/var/lib/mysql
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER_NAME=${MYSQL_USER_NAME}
-      - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    env_file:
+      - .env
     networks:
       - magento2_dev
 
@@ -132,8 +131,8 @@ services:
     restart: unless-stopped
     volumes:
       - redis-cache:/data
-    environment:
-      - VERBOSE=false
+    env_file:
+      - .env
     networks:
       - magento2_dev
     tty: true
@@ -149,8 +148,8 @@ services:
     restart: unless-stopped
     volumes:
       - redis-page-cache:/data
-    environment:
-      - VERBOSE=false
+    env_file:
+      - .env
     networks:
       - magento2_dev
     tty: true
@@ -166,8 +165,8 @@ services:
     restart: unless-stopped
     volumes:
       - redis-session:/data
-    environment:
-      - VERBOSE=false
+    env_file:
+      - .env
     networks:
       - magento2_dev
     tty: true
