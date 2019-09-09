@@ -14,7 +14,9 @@ RUN apt-get update && apt-get install -y \
 	libpng-dev \
 	libxml2-dev \
 	libxslt-dev \
-	libzip-dev
+	libzip-dev  \
+	zip         \
+	unzip
 ########################################################################################################################
 RUN docker-php-ext-configure \
 	gd --with-jpeg-dir=/usr/local/ --with-freetype-dir=/usr/include/
@@ -37,6 +39,8 @@ RUN rm -rf /var/cache/apk/* \
 COPY .docker/php-cli/bin/ /usr/local/bin/
 RUN ["chmod", "+x", "/usr/local/bin/"]
 ########################################################################################################################
+ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_HOME=${COMPOSER_HOME}
 ########################################################################################################################
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 ########################################################################################################################
