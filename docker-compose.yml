@@ -13,8 +13,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./source_code:${PROJECT_ROOT}
-    environment:
-      - VERBOSE=false
+    env_file:
+      - .env
     networks:
       - magento2_dev
 
@@ -29,8 +29,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./source_code:${PROJECT_ROOT}
-    environment:
-      - VERBOSE=false
+    env_file:
+      - .env
     networks:
       - magento2_dev
     tty: true
@@ -48,8 +48,8 @@ services:
       - ./source_code:${PROJECT_ROOT}
     networks:
       - magento2_dev
-    environment:
-      - VERBOSE=false
+    env_file:
+      - .env
 
   #NGINX Container
   nginx:
