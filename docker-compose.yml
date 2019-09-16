@@ -1,0 +1,201 @@
+version: "3"
+
+services:
+
+  #PHP FPM Container
+  php-fpm:
+    container_name: ${PROJECT_NAMESPACE}_php_fpm
+    build:
+      context: .
+      dockerfile: .docker/php-fpm/Dockerfile
+      args:
+        - PHP_VERSION=${PHP_VERSION}
+    restart: unless-stopped
+    volumes:
+      - ./source_code:${PROJECT_ROOT}
+    env_file:
+      - .env
+    networks:
+      - magento2_dev
+    links:
+      - mysql
+      - redis-cache
+      - redis-page-cache
+      - redis-session
+
+  #PHP CLI Container
+  php-cli:
+    container_name: ${PROJECT_NAMESPACE}_php_cli
+    build:
+      context: .
+      dockerfile: .docker/php-cli/Dockerfile
+      args:
+        - PHP_VERSION=${PHP_VERSION}
+    restart: unless-stopped
+    volumes:
+      - ./source_code:${PROJECT_ROOT}
+    env_file:
+      - .env
+    networks:
+      - magento2_dev
+    tty: true
+    links:
+      - mysql
+      - redis-cache
+      - redis-page-cache
+      - redis-session
+
+  #PHP Cron Job Container
+  php-cron:
+    container_name: ${PROJECT_NAMESPACE}_php_cron
+    build:
+      context: .
+      dockerfile: .docker/php-cron/Dockerfile
+      args:
+        - PHP_VERSION=${PHP_VERSION}
+    restart: unless-stopped
+    volumes:
+      - ./source_code:${PROJECT_ROOT}
+    networks:
+      - magento2_dev
+    links:
+      - mysql
+      - redis-cache
+      - redis-page-cache
+      - redis-session
+    env_file:
+      - .env
+
+  #NGINX Container
+  nginx:
+    container_name: ${PROJECT_NAMESPACE}_nginx
+    build:
+      context: .
+      dockerfile: .docker/nginx/Dockerfile
+      args:
+        - NGINX_PORT=${NGINX_PORT}
+        - NGINX_PROXY=${NGINX_PROXY}
+        - PROJECT_URL=${PROJECT_URL}
+        - PROJECT_DOMAIN=${PROJECT_DOMAIN}
+        - PROJECT_ROOT=${PROJECT_ROOT}
+        - TIME_ZONE=${TIME_ZONE}
+    restart: unless-stopped
+    volumes:
+      - ./source_code:${PROJECT_ROOT}
+    ports:
+      - "443:443"
+    env_file:
+      - .env
+    networks:
+      - magento2_dev
+    links:
+      - php-fpm
+
+  #MySQL Container
+  mysql:
+    container_name: ${PROJECT_NAMESPACE}_mysql
+    build:
+      context: .
+      dockerfile: .docker/mysql/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - database:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - magento2_dev
+
+  phpmyadmin:
+    container_name: ${PROJECT_NAMESPACE}_phpmyadmin
+    hostname: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8888:80"
+    depends_on:
+      - mysql
+    networks:
+      - magento2_dev
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+  #Redis Container for default cache
+  redis-cache:
+    container_name: ${PROJECT_NAMESPACE}_redis_cache
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+      args:
+        - ALPINE_VERSION=${ALPINE_VERSION}
+    restart: unless-stopped
+    volumes:
+      - redis-cache:/data
+    env_file:
+      - .env
+    networks:
+      - magento2_dev
+    tty: true
+
+  #Redis Container for full page cache
+  redis-page-cache:
+    container_name: ${PROJECT_NAMESPACE}_redis_page_cache
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+      args:
+        - ALPINE_VERSION=${ALPINE_VERSION}
+    restart: unless-stopped
+    volumes:
+      - redis-page-cache:/data
+    env_file:
+      - .env
+    networks:
+      - magento2_dev
+    tty: true
+
+  #Redis Container for session
+  redis-session:
+    container_name: ${PROJECT_NAMESPACE}_redis_session
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+      args:
+        - ALPINE_VERSION=${ALPINE_VERSION}
+    restart: unless-stopped
+    volumes:
+      - redis-session:/data
+    env_file:
+      - .env
+    networks:
+      - magento2_dev
+    tty: true
+
+  #Varnish Container
+  varnish:
+    container_name: ${PROJECT_NAMESPACE}_varnish
+    build:
+      context: .
+      dockerfile: .docker/varnish/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - magento2_dev
+    links:
+      - nginx
+    ports:
+      - "80:80"
+
+#Volumes
+volumes:
+  database:
+  redis-cache:
+  redis-page-cache:
+  redis-session:
+
+#Network
+networks:
+  magento2_dev:
+    driver: bridge
+
