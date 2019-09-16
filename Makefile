@@ -40,6 +40,14 @@ help:
 	@echo "$(call format,'make','magento:setup','Run all container with new magento installation')"
 	@echo "$(call format,'make','magento:cli','Opens magento cli container')"
 
+	@echo "$(call red,'Redis')"
+	@echo "$(call format,'make','redis:monitor-cache','Monitor Redis Cache Container Logs')"
+	@echo "$(call format,'make','redis:monitor-page-cache','Monitor Redis Page Cache Container Logs')"
+	@echo "$(call format,'make','redis:monitor-session-cache','Monitor Redis Session Cache Container Logs')"
+
+
+
+
 docker\:up:
 	@echo "$(call yellow, 'Up all containers')"
 	@docker-compose -f docker-compose.yml up -d
@@ -82,3 +90,16 @@ magento\:setup:
 magento\:cli:
 	@echo "$(call yellow,'Opens magento cli container')"
 	@docker-compose run --rm magento_cli $(call args)
+
+
+redis\:monitor-cache:
+	@echo "$(call yellow,'Monitor Redis Cache Container Logs')"
+	@docker logs magento_redis_cache $(call args)
+
+redis\:monitor-page-cache:
+	@echo "$(call yellow,'Monitor Redis Page Cache Container Logs')"
+	@docker logs magento_redis_page_cache $(call args)
+
+redis\:monitor-session-cache:
+	@echo "$(call yellow,'Monitor Redis Session Cache Container Logs')"
+	@docker logs magento_redis_session $(call args)

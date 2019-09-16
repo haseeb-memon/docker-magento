@@ -37,16 +37,6 @@ Install [Docker](https://docs.docker.com/docker-for-windows/install/), [Docker-c
 Install [Docker](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/) and [Docker-compose](https://docs.docker.com/compose/install/#install-compose).
 
 
-# Usage
-1. clone repository
-2. run `mv .env.dist .env`
-3. update `<project_root_folder_>/.env` with your project's environment variables
-4. echo "127.0.0.1 magento.local" | sudo tee -a /etc/hosts
-4. run `docker-compose up -d`
-5. bin/setup magento2.local
-6. open https://magento.local 
-
-
 #### New Projects
 
 ```bash
