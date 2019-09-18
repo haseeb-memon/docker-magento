@@ -31,20 +31,24 @@ help:
 	@echo "$(call format,'make','docker:down','Down all containers')"
 	@echo "$(call format,'make','docker:ps','Show containers statuses')"
 	@echo "$(call format,'make','docker:exec','Run container')"
+	@echo "$(call format,'make','docker:log','Show container logs')"
 	@echo "$(call format,'make','docker:start','Start container')"
 	@echo "$(call format,'make','docker:stop','Stop container')"
 	@echo "$(call format,'make','docker:restart','Restart container')"
 	@echo "$(call format,'make','docker:build','Start build containers')"
+	@echo "$(call format,'make','docker:clean','Clean docker images and volumes')"
 
 	@echo "$(call red,'Magento')"
 	@echo "$(call format,'make','magento:setup','Run all container with new magento installation')"
 	@echo "$(call format,'make','magento:cli','Opens magento cli container')"
 
 	@echo "$(call red,'Redis')"
-	@echo "$(call format,'make','redis:monitor-cache','Monitor Redis Cache Container Logs')"
-	@echo "$(call format,'make','redis:monitor-page-cache','Monitor Redis Page Cache Container Logs')"
-	@echo "$(call format,'make','redis:monitor-session-cache','Monitor Redis Session Cache Container Logs')"
+	@echo "$(call format,'make','redis:monitor','Monitor Redis CLI Logs')"
+	@echo "$(call format,'make','redis:flush','Flush Redis Cache')"
 
+	@echo "$(call red,'Mysql')"
+	@echo "$(call format,'make','mysql:backup','Backup mysql database')"
+	@echo "$(call format,'make','mysql:restore','Restore mysql database in container')"
 
 
 
@@ -61,8 +65,12 @@ docker\:ps:
 	@docker-compose ps $(call args)
 
 docker\:exec:
-	@echo "$(call yellow, 'Run container')"
-	@docker-compose exec $(call args)
+	@echo "$(call yellow, 'Run container:') $(call red,$(call args))"
+	@docker exec -it $(call args)
+
+docker\:log:
+	@echo "$(call yellow, 'Show container log:') $(call red,$(call args))"
+	@docker logs -f $(call args)
 
 docker\:start:
 	@echo "$(call yellow, 'Start container:') $(call red,$(call args))"
@@ -70,36 +78,51 @@ docker\:start:
 
 docker\:stop:
 	@echo "$(call yellow, 'Stop container:') $(call red,$(call args))"
-	@docker-compose stop $(call args)
+	@docker stop $(call args)
 
 docker\:restart:
 	@echo "$(call yellow, 'Restart container:') $(call red,$(call args))"
-	@docker-compose restart $(call args)
+	@docker restart $(call args)
 
 docker\:build:
 	@echo "$(call yellow,'Start build containers')"
 	@docker-compose -f docker-compose.yml build $(call args)
-	@docker-compose exec magento_php_cli bash -c 'sh /usr/local/bin/startup.sh'
 
+docker\:clean:
+	@echo "$(call yellow,'Clean docker images and volumes')"
+	@docker-compose down $(call args)
+	docker system prune --volumes --filter "label=magento"
 
 magento\:setup:
 	@echo "$(call yellow,'Start building containers and magento installation')"
-	@docker-compose -f docker-compose.yml build $(call args)
-	@docker-compose exec magento_php_cli bash -c 'sh /usr/local/bin/startup.sh'
+	@docker-compose -f docker-compose.yml up -d --build $(call args)
+	@docker exec -it magento_php_cli bash -c 'bash /usr/local/bin/startup.sh'
 
 magento\:cli:
 	@echo "$(call yellow,'Opens magento cli container')"
-	@docker-compose run --rm magento_cli $(call args)
+	@docker exec -it magento_php_cli bash
 
+## Monitor Redis cache
+redis\:monitor:
+	@echo "$(call yellow,'Monitor Redis CLI Logs')"
+	@docker exec -it $(call args) sh -c 'redis-cli monitor'
 
-redis\:monitor-cache:
-	@echo "$(call yellow,'Monitor Redis Cache Container Logs')"
-	@docker logs magento_redis_cache $(call args)
+## Flush Redis cache
+redis\:flush:
+	@echo "$(call yellow,'Monitor Redis CLI Logs')"
+	@docker exec -it $(call args) sh -c 'redis-cli flushall'
 
-redis\:monitor-page-cache:
-	@echo "$(call yellow,'Monitor Redis Page Cache Container Logs')"
-	@docker logs magento_redis_page_cache $(call args)
+## Backup the "mysql" volume
+mysql\:backup:
+    @docker run --rm \
+        --volumes-from $$(docker-compose ps -q mysql) \
+        --volume $$(pwd):/backup \
+        busybox sh -c "tar cvf /backup/backup.tar /var/lib/mysql"
 
-redis\:monitor-session-cache:
-	@echo "$(call yellow,'Monitor Redis Session Cache Container Logs')"
-	@docker logs magento_redis_session $(call args)
+## Restore the "mysql" volume
+mysql\:restore:
+	@docker run --rm \
+		--volumes-from $$(docker-compose ps -q mysql) \
+		--volume $$(pwd):/backup \
+		busybox sh -c "tar xvf /backup/backup.tar var/lib/mysql/"
+	@docker-compose restart mysql
