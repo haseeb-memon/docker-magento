@@ -65,8 +65,7 @@ Get your authentication keys for Magento Marketplace.
 For more information about Magento Marketplace authentication, see the [DevDocs](http://devdocs.magento.com/guides/v2.3/install-gde/prereq/connect-auth.html).  
 The setup script will require you to provide authentication information!
 
-To manually configure authentication, copy `src/auth.json.sample` to `src/auth.json`. Then, update the username and password values with your Magento public and private keys, respectively. Finally, copy the file to the container by running `bin/copytocontainer auth.json`.
-
+To configure authentication, update .env file with your Magento public and private keys, respectively.
 
 
 ### Redis
