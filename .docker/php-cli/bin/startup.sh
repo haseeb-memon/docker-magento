@@ -32,7 +32,7 @@ php bin/magento setup:install \
 --admin-lastname=$MAGENTO_ADMIN_LASTNAME \
 --admin-email=$MAGENTO_ADMIN_EMAIL \
 --admin-user=$MAGENTO_ADMIN_USERNAME \
---admin-password='admin123' \
+--admin-password=$MAGENTO_ADMIN_PASSWORD \
 --base-url=$MAGENTO_BASE_URL \
 --base-url-secure=$MAGENTO_SECURE_BASE_URL \
 --backend-frontname=$MAGENTO_BACKEND_FRONTNAME \
@@ -62,8 +62,21 @@ php bin/magento setup:config:set --page-cache=redis    --page-cache-redis-server
 echo "Y" | php bin/magento setup:config:set --session-save=redis  --session-save-redis-host=redis-session      --session-save-redis-port=6379 --session-save-redis-log-level=3 --session-save-redis-db=0;
 ########################################################################################################################
 echo "Configure ElasticSearch"
-#php bin/magento cache:flush;
-#php bin/magento indexer:reindex catalogsearch_fulltext
+#composer require smile/elasticsuite ^2.8.0
+#php bin/magento cache:clean
+#php bin/magento cache:flush
+#php bin/magento module:enable Smile_ElasticsuiteCore Smile_ElasticsuiteCatalog Smile_ElasticsuiteSwatches Smile_ElasticsuiteCatalogRule Smile_ElasticsuiteVirtualCategory Smile_ElasticsuiteThesaurus Smile_ElasticsuiteCatalogOptimizer Smile_ElasticsuiteTracker
+#php bin/magento setup:upgrade
+#php bin/magento setup:di:compile
+#php bin/magento indexer:reindex
+#php bin/magento index:reindex catalogsearch_fulltext
+#php bin/magento index:reindex elasticsuite_categories_fulltext
+#php bin/magento index:reindex elasticsuite_thesaurus
+########################################################################################################################
+php bin/magento config:set catalog/search/engine elasticsearch6
+php bin/magento config:set catalog/search/elasticsearch6_server_hostname elasticsearch
+php bin/magento cache:flush;
+php bin/magento indexer:reindex catalogsearch_fulltext
 #php bin/magento indexer:reindex
 ########################################################################################################################
 echo "Configure Magento"
@@ -80,4 +93,7 @@ echo "Optimize Magento"
 #rm -rf var/cache var/page_cache var/generation var/di generated/*
 #rm -rf generated/metadata/* generated/code/*
 #php bin/magento deploy:mode:set production
+php bin/magento config:set catalog/frontend/flat_catalog_category 1
+php bin/magento config:set catalog/frontend/flat_catalog_product 1
+php bin/magento indexer:reindex
 ########################################################################################################################

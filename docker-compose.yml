@@ -187,12 +187,63 @@ services:
     ports:
       - "80:80"
 
+  #ElasticSearch Container
+  elasticsearch:
+    container_name: ${PROJECT_NAMESPACE}_elasticsearch
+    build:
+      context: .
+      dockerfile: .docker/elasticsearch/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - xpack.security.enabled=false
+      - cluster.name=magento-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - magento2_dev
+  #LogStash Container
+  logstash:
+    container_name: ${PROJECT_NAMESPACE}_logstash
+    image: docker.elastic.co/logstash/logstash:6.5.4
+    depends_on:
+      - elasticsearch
+    ports:
+      - 12201:12201/udp
+    volumes:
+      - .docker/logstash/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    networks:
+      - magento2_dev
+  #Kibana Container
+  kibana:
+    container_name: ${PROJECT_NAMESPACE}_kibana
+    image: docker.elastic.co/kibana/kibana:6.5.4
+    depends_on:
+      - logstash
+    ports:
+      - 5601:5601
+    networks:
+      - magento2_dev
+
 #Volumes
 volumes:
   database:
   redis-cache:
   redis-page-cache:
   redis-session:
+  elasticsearch:
 
 #Network
 networks:
