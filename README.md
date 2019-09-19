@@ -2,15 +2,20 @@
 Docker development environment for Magento 1 &amp; Magento 2
 
 ### Infrastructure overview
-* Container 1: Nginx + Self Signed SSL Terminator + HTTP 2
-* Container 2: PHP-FPM
-* Container 3: PHP-CLI
-* Container 4: PHP-CRON
-* Container 5: MariaDB
-* Container 6: Redis (for Magento's cache)
-* Container 7: Redis (for Magento's full page cache)
-* Container 8: Redis (for Magento's sessions cache)
-* Container 9: Varnish
+* Container 1:  Nginx + Self Signed SSL Terminator + HTTP 2
+* Container 2:  PHP-FPM
+* Container 3:  PHP-CLI
+* Container 4:  PHP-CRON
+* Container 5:  MariaDB
+* Container 6:  PhpMyAdmin
+* Container 7:  Redis (for Magento's cache)
+* Container 8:  Redis (for Magento's full page cache)
+* Container 9:  Redis (for Magento's sessions cache)
+* Container 10: Varnish
+* Container 11: ElasticSearch
+* Container 12: LogStash
+* Container 13: Kibana
+
 
 ### Why a separate cron container?
 
@@ -26,15 +31,24 @@ if docker is not installed on your system. do the following.
 
 **MacOS:**
 
-Install [Docker](https://docs.docker.com/docker-for-mac/install/), [Docker-compose](https://docs.docker.com/compose/install/#install-compose).
+Install 
+    [Docker](https://docs.docker.com/docker-for-mac/install/)
+    [Docker-compose](https://docs.docker.com/compose/install/#install-compose)
+    [Make](https://www.gnu.org/software/make/)
 
 **Windows:**
 
-Install [Docker](https://docs.docker.com/docker-for-windows/install/), [Docker-compose](https://docs.docker.com/compose/install/#install-compose) .
+Install 
+    [Docker](https://docs.docker.com/docker-for-windows/install/)
+    [Docker-compose](https://docs.docker.com/compose/install/#install-compose)
+    [Make](https://www.gnu.org/software/make/)
 
 **Linux:**
 
-Install [Docker](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/) and [Docker-compose](https://docs.docker.com/compose/install/#install-compose).
+Install 
+    [Docker](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
+    [Docker-compose](https://docs.docker.com/compose/install/#install-compose)
+    [Make](https://www.gnu.org/software/make/)
 
 
 #### New Projects
@@ -56,7 +70,20 @@ echo "127.0.0.1 www.magento.local" | sudo tee -a /etc/hosts
 make magento:setup
 
 open https://www.magento.local
+
+
 ```
+
+
+## Manage dockers with container with make
+
+List commands, bring containers  up, down, list, build...
+
+    make docker:ps
+    make docker:build
+    make docker:up
+    make docker:down
+
 
 
 ### Composer Authentication
@@ -90,4 +117,42 @@ You may also monitor Redis by running: `bin/redis redis-cli monitor`
 
 For more information about Redis usage with Magento, see the <a href="https://devdocs.magento.com/guides/v2.3/config-guide/redis/redis-session.html" target="_blank">DevDocs</a>.
 
+## Varnish
 
+Varnish is running out of the container by default. If you do not require varnish, then you will need to remove the varnish block from your `docker-compose.yml` and update the `nginx proxy` variable to `php-fpm` container definition.
+
+To clear varnish, you can use the `make varnish:flush` to clear the cache. 
+Alternatively, you could restart the varnish container. `make docker:restart <varnish container name>`
+If you need to add your own VCL, then it needs to be mounted to: `/data/varnish.vcl`.
+
+
+
+### Elastic stack (ELK)
+
+Run Magento 2 with the latest version of the ELK (Elasticsearch, Logstash, Kibana) stack with Docker and Docker Compose.
+
+It will give you the ability to analyze magento catalog data set by using the searching/aggregation capabilities of Elasticsearch
+and the visualization power of Kibana.
+
+Based on the official Docker images from Elastic:
+
+* [Elasticsearch]
+* [Logstash]
+* [Kibana]
+
+
+### Access services (elasticsearch and kibana)
+Give few seconds to initialize elasticsearch and kibana, then 
+
+open web browser to server (elasticsearch):
+
+    open http://localhost:9200
+    
+open web browser to client (kibana):    
+    
+    open http://localhost:5601
+
+
+### Datasource Adminer
+
+- PHPMyAdmin: http://localhost:8888
