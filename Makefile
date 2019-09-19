@@ -46,6 +46,10 @@ help:
 	@echo "$(call format,'make','redis:monitor','Monitor Redis CLI Logs')"
 	@echo "$(call format,'make','redis:flush','Flush Redis Cache')"
 
+	@echo "$(call red,'Vanish')"
+	@echo "$(call format,'make','varnish:monitor','Monitor Varnish Logs')"
+	@echo "$(call format,'make','varnish:flush','Flush Varnish Cache')"
+
 	@echo "$(call red,'Mysql')"
 	@echo "$(call format,'make','mysql:backup','Backup mysql database')"
 	@echo "$(call format,'make','mysql:restore','Restore mysql database in container')"
@@ -111,6 +115,17 @@ redis\:monitor:
 redis\:flush:
 	@echo "$(call yellow,'Monitor Redis CLI Logs')"
 	@docker exec -it $(call args) sh -c 'redis-cli flushall'
+
+## Monitor varnish Logs
+varnish\:monitor:
+	@echo "$(call yellow,'Monitor Varnish Logs')"
+	@docker exec -it magento_varnish sh -c 'varnishlog'
+
+## Flush Varnish Cache
+varnish\:flush:
+	@echo "$(call yellow,'Flush Varnish Cache')"
+	@docker exec -it magento_php_cli bash -c 'php bin/magento cache:flush;'
+
 
 ## Backup the "mysql" volume
 mysql\:backup:
