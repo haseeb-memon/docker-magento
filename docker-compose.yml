@@ -187,6 +187,22 @@ services:
     ports:
       - "80:80"
 
+  #RabbitMQ Queuing System
+  rabbitmq:
+    container_name: ${PROJECT_NAMESPACE}_rabbitmq
+    image: rabbitmq:3.7.8-management
+    volumes:
+      - 'rabbitmq_data:/data'
+    environment:
+      - RABBITMQ_DEFAULT_USER=${MAGENTO_AMQP_USER}
+      - RABBITMQ_DEFAULT_PASS=${MAGENTO_AMQP_PASSWORD}
+    networks:
+      - magento2_dev
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
+
   #ElasticSearch Container
   elasticsearch:
     container_name: ${PROJECT_NAMESPACE}_elasticsearch
@@ -214,6 +230,7 @@ services:
       - 9300:9300
     networks:
       - magento2_dev
+
   #LogStash Container
   logstash:
     container_name: ${PROJECT_NAMESPACE}_logstash
@@ -226,6 +243,7 @@ services:
       - .docker/logstash/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
     networks:
       - magento2_dev
+
   #Kibana Container
   kibana:
     container_name: ${PROJECT_NAMESPACE}_kibana
@@ -237,12 +255,23 @@ services:
     networks:
       - magento2_dev
 
+  #MailHog for Email System
+  mailhog:
+    container_name: ${PROJECT_NAMESPACE}_mailhog
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - magento2_dev
+
 #Volumes
 volumes:
   database:
   redis-cache:
   redis-page-cache:
   redis-session:
+  rabbitmq_data:
   elasticsearch:
 
 #Network
