@@ -15,6 +15,8 @@ Docker development environment for Magento 1 &amp; Magento 2
 * Container 11: ElasticSearch
 * Container 12: LogStash
 * Container 13: Kibana
+* Container 14: RabbitMQ (Queuing System)
+* Container 15: MailHog  (Email System)
 
 
 ### Why a separate cron container?
