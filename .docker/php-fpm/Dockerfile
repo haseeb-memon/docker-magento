@@ -52,8 +52,9 @@ RUN rm -rf /var/cache/apk/* \
     && rm -rf /tmp/* && rm -rf /var/tmp/*
 ########################################################################################################################
 #Copy custom configs to container
-COPY .docker/php-fpm/config/php.ini     /usr/local/etc/php/php.ini
-COPY .docker/php-fpm/config/www.conf    /usr/local/etc/php-fpm.d/www.conf
+COPY .docker/php-fpm/config/php.ini         /usr/local/etc/php/php.ini
+COPY .docker/php-fpm/config/php-fpm.conf    /usr/local/etc/php/php-fpm.conf
+COPY .docker/php-fpm/config/www.conf        /usr/local/etc/php-fpm.d/www.conf
 ########################################################################################################################
 #Copy shell executable script to container
 COPY .docker/php-fpm/bin/startup.sh     /usr/local/bin/startup.sh
