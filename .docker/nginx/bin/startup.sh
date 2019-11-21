@@ -26,6 +26,7 @@ fi
 [ ! -z "${PROJECT_URL}" ]       && sed -i "s/PROJECT_URL/${PROJECT_URL}/"       /etc/nginx/conf.d/default.conf
 [ ! -z "${PROJECT_DOMAIN}" ]    && sed -i "s/PROJECT_DOMAIN/${PROJECT_DOMAIN}/" /etc/nginx/conf.d/default.conf
 [ ! -z "${PROJECT_ROOT}" ]      && sed -i "s~PROJECT_ROOT~${PROJECT_ROOT}~"     /etc/nginx/conf.d/default.conf
+[ ! -z "${PROJECT_MODE}" ]      && sed -i "s/PROJECT_MODE/${PROJECT_MODE}/"     /etc/nginx/conf.d/default.conf
 ########################################################################################################################
 chown -R nginx:nginx /etc/nginx/ /etc/nginx/ssl/ /var/cache/nginx/ /var/log/nginx/ /var/www/html
 nginx -t;
