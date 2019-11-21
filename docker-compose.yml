@@ -1,8 +1,9 @@
 version: "3"
 
 services:
-
-  #PHP FPM Container
+  ######################################################################################################################
+  ### PHP FPM Container
+  ######################################################################################################################
   php-fpm:
     container_name: ${PROJECT_NAMESPACE}_php_fpm
     build:
@@ -22,8 +23,9 @@ services:
       - redis-cache
       - redis-page-cache
       - redis-session
-
-  #PHP CLI Container
+  ######################################################################################################################
+  ### PHP CLI Container
+  ######################################################################################################################
   php-cli:
     container_name: ${PROJECT_NAMESPACE}_php_cli
     build:
@@ -44,8 +46,9 @@ services:
       - redis-cache
       - redis-page-cache
       - redis-session
-
-  #PHP Cron Job Container
+  ######################################################################################################################
+  ### PHP Cron Job Container
+  ######################################################################################################################
   php-cron:
     container_name: ${PROJECT_NAMESPACE}_php_cron
     build:
@@ -65,8 +68,9 @@ services:
       - redis-session
     env_file:
       - .env
-
-  #NGINX Container
+  ######################################################################################################################
+  ### NGINX Container
+  ######################################################################################################################
   nginx:
     container_name: ${PROJECT_NAMESPACE}_nginx
     build:
@@ -90,8 +94,9 @@ services:
       - magento2_dev
     links:
       - php-fpm
-
-  #MySQL Container
+  ######################################################################################################################
+  ### Database Container
+  ######################################################################################################################
   mysql:
     container_name: ${PROJECT_NAMESPACE}_mysql
     build:
@@ -104,7 +109,9 @@ services:
       - .env
     networks:
       - magento2_dev
-
+  ######################################################################################################################
+  ### Database Management Container
+  ######################################################################################################################
   phpmyadmin:
     container_name: ${PROJECT_NAMESPACE}_phpmyadmin
     hostname: phpmyadmin
@@ -119,8 +126,9 @@ services:
       - PMA_HOST=mysql
       - PMA_USER=root
       - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
-
-  #Redis Container for default cache
+  ######################################################################################################################
+  ### Redis Container for default cache
+  ######################################################################################################################
   redis-cache:
     container_name: ${PROJECT_NAMESPACE}_redis_cache
     build:
@@ -136,8 +144,9 @@ services:
     networks:
       - magento2_dev
     tty: true
-
-  #Redis Container for full page cache
+  ######################################################################################################################
+  ### Redis Container for full page cache
+  ######################################################################################################################
   redis-page-cache:
     container_name: ${PROJECT_NAMESPACE}_redis_page_cache
     build:
@@ -153,8 +162,9 @@ services:
     networks:
       - magento2_dev
     tty: true
-
-  #Redis Container for session
+  ######################################################################################################################
+  ### Redis Container for session
+  ######################################################################################################################
   redis-session:
     container_name: ${PROJECT_NAMESPACE}_redis_session
     build:
@@ -170,8 +180,9 @@ services:
     networks:
       - magento2_dev
     tty: true
-
-  #Varnish Container
+  ######################################################################################################################
+  ### Varnish Proxy Container
+  ######################################################################################################################
   varnish:
     container_name: ${PROJECT_NAMESPACE}_varnish
     build:
@@ -186,8 +197,9 @@ services:
       - nginx
     ports:
       - "80:80"
-
-  #RabbitMQ Queuing System
+  ######################################################################################################################
+  ### RabbitMQ Messaging Queuing System
+  ######################################################################################################################
   rabbitmq:
     container_name: ${PROJECT_NAMESPACE}_rabbitmq
     image: rabbitmq:3.7.8-management
@@ -202,8 +214,9 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: always
-
-  #ElasticSearch Container
+  ######################################################################################################################
+  ### ElasticSearch Container
+  ######################################################################################################################
   elasticsearch:
     container_name: ${PROJECT_NAMESPACE}_elasticsearch
     build:
@@ -230,8 +243,9 @@ services:
       - 9300:9300
     networks:
       - magento2_dev
-
-  #LogStash Container
+  ######################################################################################################################
+  ### LogStash Container
+  ######################################################################################################################
   logstash:
     container_name: ${PROJECT_NAMESPACE}_logstash
     image: docker.elastic.co/logstash/logstash:6.5.4
@@ -243,8 +257,9 @@ services:
       - .docker/logstash/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
     networks:
       - magento2_dev
-
-  #Kibana Container
+  ######################################################################################################################
+  ### Kibana Container
+  ######################################################################################################################
   kibana:
     container_name: ${PROJECT_NAMESPACE}_kibana
     image: docker.elastic.co/kibana/kibana:6.5.4
@@ -254,8 +269,9 @@ services:
       - 5601:5601
     networks:
       - magento2_dev
-
-  #MailHog for Email System
+  ######################################################################################################################
+  ### MailHog for Email Catching System
+  ######################################################################################################################
   mailhog:
     container_name: ${PROJECT_NAMESPACE}_mailhog
     image: mailhog/mailhog
@@ -264,8 +280,9 @@ services:
       - 8025:8025
     networks:
       - magento2_dev
-
-#Volumes
+########################################################################################################################
+### Volumes Containers
+########################################################################################################################
 volumes:
   source-code:
     external: true
@@ -275,9 +292,9 @@ volumes:
   redis-session:
   rabbitmq_data:
   elasticsearch:
-
-#Network
+########################################################################################################################
+### Networks
+########################################################################################################################
 networks:
   magento2_dev:
     driver: bridge
-
