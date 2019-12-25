@@ -285,7 +285,6 @@ services:
 ########################################################################################################################
 volumes:
   source-code:
-    external: true
   database:
   redis-cache:
   redis-page-cache:
