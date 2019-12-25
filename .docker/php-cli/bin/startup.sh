@@ -16,14 +16,15 @@ echo "Delete default index files";
 rm -rf * && rm -rf .*
 ########################################################################################################################
 echo "Download Magento...";
-if [ -z $MAGENTO_VERSION ]; then
-    composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=$MAGENTO_VERSION $PROJECT_ROOT ;
-else
+if [[ -z $MAGENTO_VERSION ]]; then
     composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition $PROJECT_ROOT ;
+else
+    composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=$MAGENTO_VERSION $PROJECT_ROOT ;
 fi
 ########################################################################################################################
 echo "Fixing File Permissions...";
-chmod u+w -R ./var ./vendor ./pub/static ./pub/media ./app/etc
+chmod u+w -R ./var ./vendor ./pub/static ./pub/media ./app/etc ./generated  ./var/page_cache/
+#chown -R www-data:www-data $PROJECT_ROOT
 chmod u+x ./bin/magento
 ########################################################################################################################
 echo "Installing Magento"
@@ -61,6 +62,9 @@ php bin/magento setup:config:set --cache-backend=redis --cache-backend-redis-ser
 php bin/magento setup:config:set --page-cache=redis    --page-cache-redis-server=redis-page-cache   --page-cache-redis-port=6379    --page-cache-redis-db=0;
 echo "Y" | php bin/magento setup:config:set --session-save=redis  --session-save-redis-host=redis-session      --session-save-redis-port=6379 --session-save-redis-log-level=3 --session-save-redis-db=0;
 ########################################################################################################################
+echo "Configure RabbitMQ"
+php bin/magento setup:config:set --amqp-host="$MAGENTO_AMQP_HOST" --amqp-port="$MAGENTO_AMQP_PORT" --amqp-user="$MAGENTO_AMQP_USER" --amqp-password="$MAGENTO_AMQP_PASSWORD" --amqp-virtualhost="/"
+########################################################################################################################
 echo "Configure ElasticSearch"
 #composer require smile/elasticsuite ^2.8.0
 #php bin/magento cache:clean
@@ -95,5 +99,13 @@ echo "Optimize Magento"
 #php bin/magento deploy:mode:set production
 php bin/magento config:set catalog/frontend/flat_catalog_category 1
 php bin/magento config:set catalog/frontend/flat_catalog_product 1
+php bin/magento config:set sitemap/generate/enabled 1
 php bin/magento indexer:reindex
 ########################################################################################################################
+echo "Disable Temando_Shipping"
+php bin/magento module:disable Temando_Shipping
+rm -rf var/cache/ generated/ pub/static/
+php bin/magento setup:upgrade
+php bin/magento setup:static-content:deploy -f
+php bin/magento setup:di:compile
+chmod -R 777 var/ pub/ generated/
