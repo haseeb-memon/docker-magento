@@ -58,10 +58,12 @@ help:
 
 docker\:up:
 	@echo "$(call yellow, 'Up all containers')"
-	@docker-compose -f docker-compose.yml up -d
+	@docker-sync start
+	@docker-compose -f docker-compose.yml up
 
 docker\:down:
 	@echo "$(call yellow, 'Down all containers')"
+	@docker-sync stop
 	@docker-compose down $(call args)
 
 docker\:ps:
@@ -94,11 +96,14 @@ docker\:build:
 
 docker\:clean:
 	@echo "$(call yellow,'Clean docker images and volumes')"
+	@docker-sync stop
 	@docker-compose down $(call args)
+	@docker-compose down -v --rmi all --remove-orphans
 	docker system prune --volumes --filter "label=magento"
 
 magento\:setup:
 	@echo "$(call yellow,'Start building containers and magento installation')"
+	@docker-sync start
 	@docker-compose -f docker-compose.yml up -d --build $(call args)
 	@docker exec -it magento_php_cli bash -c 'bash /usr/local/bin/startup.sh'
 
@@ -116,10 +121,17 @@ redis\:flush:
 	@echo "$(call yellow,'Monitor Redis CLI Logs')"
 	@docker exec -it $(call args) sh -c 'redis-cli flushall'
 
+## Monitor varnish stats
+varnish\:stats:
+	@echo "$(call yellow,'Monitor Varnish Logs')"
+	@docker exec -it magento_varnish sh -c 'varnishstat'
+
+
 ## Monitor varnish Logs
 varnish\:monitor:
 	@echo "$(call yellow,'Monitor Varnish Logs')"
 	@docker exec -it magento_varnish sh -c 'varnishlog'
+
 
 ## Flush Varnish Cache
 varnish\:flush:
