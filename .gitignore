@@ -5,45 +5,51 @@
 /.idea/
 
 #--------------------------#
+# Docker Sync Files    #
+#--------------------------#
+/.docker-sync/
+
+
+#--------------------------#
 # Magento Default Files    #
 #--------------------------#
 
-/app/etc/local.xml
+/source_code/app/etc/local.xml
 
-/media/*
-!/media/.htaccess
+/source_code/media/*
+!/source_code/media/.htaccess
 
-!/media/customer
-/media/customer/*
-!/media/customer/.htaccess
+!/source_code/media/customer
+/source_code/media/customer/*
+!/source_code/media/customer/.htaccess
 
-!/media/dhl
-/media/dhl/*
-!/media/dhl/logo.jpg
+!/source_code/media/dhl
+/source_code/media/dhl/*
+!/source_code/media/dhl/logo.jpg
 
-!/media/downloadable
-/media/downloadable/*
-!/media/downloadable/.htaccess
+!/source_code/media/downloadable
+/source_code/media/downloadable/*
+!/source_code/media/downloadable/.htaccess
 
-!/media/xmlconnect
-/media/xmlconnect/*
+!/source_code/media/xmlconnect
+/source_code/media/xmlconnect/*
 
-!/media/xmlconnect/custom
-/media/xmlconnect/custom/*
-!/media/xmlconnect/custom/ok.gif
+!/source_code/media/xmlconnect/custom
+/source_code/media/xmlconnect/custom/*
+!/source_code/media/xmlconnect/custom/ok.gif
 
-!/media/xmlconnect/original
-/media/xmlconnect/original/*
-!/media/xmlconnect/original/ok.gif
+!/source_code/media/xmlconnect/original
+/source_code/media/xmlconnect/original/*
+!/source_code/media/xmlconnect/original/ok.gif
 
-!/media/xmlconnect/system
-/media/xmlconnect/system/*
-!/media/xmlconnect/system/ok.gif
+!/source_code/media/xmlconnect/system
+/source_code/media/xmlconnect/system/*
+!/source_code/media/xmlconnect/system/ok.gif
 
-/var/*
-!/var/.htaccess
+/source_code/var/*
+!/source_code/var/.htaccess
 
-!/var/package
-/var/package/*
-!/var/package/*.xml
+!/source_code/var/package
+/source_code/var/package/*
+!/source_code/var/package/*.xml
 
