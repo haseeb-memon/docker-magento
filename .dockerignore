@@ -1,0 +1,35 @@
+#--------------------------#
+# System Default Files    #
+#--------------------------#
+.DS_Store
+.vscode/
+.idea/
+README.md
+LICENSE
+env.*
+#--------------------------#
+# Git Files                #
+#--------------------------#
+.git
+.gitignore
+.editorconfig
+.gitlab-ci.yml
+
+#--------------------------#
+# Docker  Files            #
+#--------------------------#
+*Dockerfile*
+*docker-compose*
+
+#--------------------------#
+# Npm Files                #
+#--------------------------#
+node_modules
+npm-debug.log
+
+#--------------------------#
+# Storage Files            #
+#--------------------------#
+# To prevent storing dev/temporary container data
+*.csv
+tmp

@@ -14,7 +14,9 @@ RUN apt-get update && apt-get install -y \
 	libpng-dev \
 	libxml2-dev \
 	libxslt-dev \
-	libzip-dev
+	libzip-dev  \
+	zip         \
+	unzip
 ########################################################################################################################
 RUN docker-php-ext-configure \
 	gd --with-jpeg-dir=/usr/local/ --with-freetype-dir=/usr/include/
@@ -24,6 +26,7 @@ RUN docker-php-ext-install \
 	bcmath \
 	intl \
 	pdo_mysql \
+	mysqli  \
 	soap \
 	xsl \
 	zip
