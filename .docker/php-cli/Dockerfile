@@ -26,6 +26,7 @@ RUN docker-php-ext-install \
 	bcmath \
 	intl \
 	pdo_mysql \
+	mysqli  \
 	soap \
 	xsl \
 	zip
