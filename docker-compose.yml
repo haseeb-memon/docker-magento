@@ -246,12 +246,34 @@ services:
     ports:
       - 12201:12201/udp
       - 5000:5000
+      - 5044:5044
       - 9600:9600
     volumes:
       - .docker/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
       - .docker/logstash/pipeline/:/usr/share/logstash/pipeline:ro
     networks:
       - magento2_dev
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+  ######################################################################################################################
+  ### filebeat Container
+  ######################################################################################################################
+  filebeat:
+    container_name: ${PROJECT_NAMESPACE}_filebeat
+    build:
+      context: .
+      dockerfile: .docker/filebeat/Dockerfile
+    volumes:
+      - .docker/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - /var/log/:/var/log/:ro
+    networks:
+      - magento2_dev
+    links:
+      - logstash
     depends_on:
       - elasticsearch
   ######################################################################################################################
@@ -268,6 +290,8 @@ services:
       - .docker/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     networks:
       - magento2_dev
+    links:
+      - elasticsearch
     depends_on:
       - elasticsearch
   ######################################################################################################################
