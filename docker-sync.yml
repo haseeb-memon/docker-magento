@@ -1,6 +1,8 @@
 version: "2"
+
 options:
   verbose: true
+
 syncs:
   source-code:
     sync_userid: '1000'
@@ -24,10 +26,7 @@ syncs:
       'var/session',
       'var/tmp',
       'node_modules',
-      'generated/*',
-      #'vendor/*',
-      'pub/static/*',
-      'pub/media/*'
+      'generated/*'
     ]
     watch_excludes: [
       '.DS_Store',
@@ -45,8 +44,5 @@ syncs:
       'var/session',
       'var/tmp',
       'node_modules',
-      'generated/*',
-      #'vendor/*',
-      'pub/static/*',
-      'pub/media/*'
+      'generated/*'
     ]
