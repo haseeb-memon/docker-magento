@@ -1,0 +1,39 @@
+# Use a descriptive name for your cluster:
+#
+cluster.name: "docker-cluster"
+
+# Use a descriptive name for the node:
+#
+node.name: "elasticsearch"
+
+
+# Set the bind address to a specific IP (IPv4 or IPv6):
+#
+network.host: 0.0.0.0
+
+# Set a custom port for HTTP:
+#
+http.port: 9200
+
+# Set a custom port for TCP:
+#
+transport.tcp.port: 9300
+
+
+node.master: true
+node.data: true
+
+
+
+
+bootstrap.memory_lock: true
+
+
+indices.recovery.max_bytes_per_sec: 100mb
+indices.query.bool.max_clause_count: 10024
+
+discovery.zen.minimum_master_nodes: 1
+discovery.type: single-node
+discovery.zen.ping.unicast.hosts: ["localhost", "[::1]"]
+
+xpack.security.enabled: false

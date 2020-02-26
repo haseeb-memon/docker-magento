@@ -15,8 +15,9 @@ Docker development environment for Magento 1 &amp; Magento 2
 * Container 11: ElasticSearch
 * Container 12: LogStash
 * Container 13: Kibana
-* Container 14: RabbitMQ (Queuing System)
-* Container 15: MailHog  (Email System)
+* Container 14: FileBeat
+* Container 15: RabbitMQ (Queuing System)
+* Container 16: MailHog  (Email System)
 
 
 ### Why a separate cron container?
@@ -142,6 +143,11 @@ Based on the official Docker images from Elastic:
 * [Logstash]
 * [Kibana]
 
+### Docker Logging With the ELK and FileBeat Stack
+Filebeat belongs to the Beats family of log shippers by Elastic. Written in Go, Filebeat is a lightweight shipper that traces specific files, supports encryption, and can be configured to export to either your Logstash container or directly to Elasticsearch.
+Filebeat is a relatively easy way to ship into ELK. Filebeat can be deployed either on your host, or you can, of course, run it as a container alongside your ELK containers (in which case you will need to add linkage to the ELK containers). There are also various Filebeat Docker images available, and some include configurations for running Filebeat and connecting it to Logstash.
+At the very least, your Filebeat configuration will need to specify the path to the JSON log file (located in /var/lib/docker/containers/…) and the details of the destination (usually the Logstash container).
+* [FileBeat]
 
 ### Access services (elasticsearch and kibana)
 Give few seconds to initialize elasticsearch and kibana, then 
