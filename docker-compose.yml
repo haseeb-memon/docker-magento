@@ -13,7 +13,7 @@ services:
         - PHP_VERSION=${PHP_VERSION}
     restart: unless-stopped
     volumes:
-      - source-code:${PROJECT_ROOT}:nocopy
+      - ./source_code:${PROJECT_ROOT}
     env_file:
       - .env
     networks:
@@ -35,7 +35,7 @@ services:
         - PHP_VERSION=${PHP_VERSION}
     restart: unless-stopped
     volumes:
-      - source-code:${PROJECT_ROOT}:nocopy
+      - ./source_code:${PROJECT_ROOT}
     env_file:
       - .env
     networks:
@@ -58,7 +58,7 @@ services:
         - PHP_VERSION=${PHP_VERSION}
     restart: unless-stopped
     volumes:
-      - source-code:${PROJECT_ROOT}:nocopy
+      - ./source_code:${PROJECT_ROOT}
     networks:
       - magento2_dev
     links:
@@ -85,7 +85,7 @@ services:
         - TIME_ZONE=${TIME_ZONE}
     restart: unless-stopped
     volumes:
-      - source-code:${PROJECT_ROOT}:nocopy
+      - ./source_code:${PROJECT_ROOT}
     ports:
       - "443:443"
     env_file:
@@ -309,7 +309,6 @@ services:
 ### Volumes Containers
 ########################################################################################################################
 volumes:
-  source-code:
   database:
   redis-cache:
   redis-page-cache:
