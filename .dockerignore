@@ -20,6 +20,7 @@ env.*
 #--------------------------#
 *Dockerfile*
 *docker-compose*
+*.env
 
 #--------------------------#
 # Npm Files                #

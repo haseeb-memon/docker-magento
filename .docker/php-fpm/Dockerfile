@@ -5,6 +5,10 @@ FROM    php:${PHP_VERSION}-fpm
 LABEL   Maintainer  =   "Haseeb Memon <memon.haseeb@hotmail.com>"
 LABEL   Description =   "php-fpm container for magento"
 ########################################################################################################################
+ARG PHP_SENDMAIL_ENABLE=${PHP_SENDMAIL_ENABLE:-true}
+ARG PHP_XDEBUG_ENABLE=${PHP_XDEBUG_ENABLE:-true}
+ARG TIME_ZONE=${TIME_ZONE:-Asia/Dubai}
+########################################################################################################################
 RUN apt-get update && apt-get install -y \
 	curl \
 	g++ \
@@ -43,12 +47,19 @@ RUN { \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 ########################################################################################################################
-RUN curl --location --output /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
-    chmod +x /usr/local/bin/mhsendmail
-
-RUN echo 'sendmail_path="/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025 --from=no-reply@docker.dev"' > /usr/local/etc/php/conf.d/mailhog.ini
-
-
+# install xdebug and enable it if the development environment is local
+RUN if [ $PHP_XDEBUG_ENABLE = "true" ]; then \
+    pecl install xdebug; \
+    docker-php-ext-enable xdebug; \
+fi;
+########################################################################################################################
+# install sendmail
+RUN if [ $PHP_SENDMAIL_ENABLE = "true" ]; then \
+    curl --location --output /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
+    chmod +x /usr/local/bin/mhsendmail  && \
+    echo 'sendmail_path="/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025 --from=no-reply@docker.dev"' > /usr/local/etc/php/conf.d/mailhog.ini;  \
+fi;
+########################################################################################################################
 RUN rm -rf /var/cache/apk/* \
     && rm -rf /tmp/pear \
     && rm -rf /var/lib/apt/lists/* && rm -rf && rm -rf /var/lib/cache/* && rm -rf /var/lib/log/* \
@@ -56,6 +67,7 @@ RUN rm -rf /var/cache/apk/* \
 ########################################################################################################################
 #Copy custom configs to container
 COPY .docker/php-fpm/config/php.ini         /usr/local/etc/php/php.ini
+COPY .docker/php-fpm/config/xdebug.ini      /usr/local/etc/php/conf.d/xdebug.ini
 COPY .docker/php-fpm/config/php-fpm.conf    /usr/local/etc/php/php-fpm.conf
 COPY .docker/php-fpm/config/www.conf        /usr/local/etc/php-fpm.d/www.conf
 ########################################################################################################################
